@@ -1,12 +1,3 @@
-import sys
-
-PATH = '/workspace/detectron2/demo'
-MIN_BOXES = 10
-MAX_BOXES = 100
-
-sys.path.append(PATH)
-
-#from detectron2_mscoco_proposal_maxnms import doit
 from detectron2.config import get_cfg
 from detectron2.engine import DefaultPredictor
 from detectron2.modeling.postprocessing import detector_postprocess
@@ -135,9 +126,9 @@ class Encoder(object):
                 for nms_thresh in np.arange(0.3, 1.0, 0.1):
                     instances, ids = fast_rcnn_inference_single_image(
                         boxes, probs, image_size,
-                        score_thresh=0.2, nms_thresh=nms_thresh, topk_per_image=MAX_BOXES
+                        score_thresh=0.2, nms_thresh=nms_thresh, topk_per_image=self.MAX_BOXES
                     )
-                    if len(ids) >= MIN_BOXES:
+                    if len(ids) >= self.MIN_BOXES:
                         break
                 instances_list.append(instances)
                 ids_list.append(ids)

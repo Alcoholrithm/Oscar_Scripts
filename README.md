@@ -9,4 +9,9 @@ Recommemd VRAM = 7GB or more
 ```
 
 ## Demo
-Coming Soon</br>
+```
+To Know How Oscar+ model which use VinVL as Encoder inferencex, See vinvl.ipynb .
+
+The Demo which inference using bottom up attention will be added soon.
+
+```

@@ -9,8 +9,8 @@ import numpy as np
 class Encoder(object):
     def __init__(self,
                     config_file = "/workspace/scene_graph_benchmark/sgg_configs/vgattr/vinvl_x152c4.yaml",
-                    opts = ["TEST.IMS_PER_BATCH", "2", "MODEL.WEIGHT", "/workspace/scene_graph_benchmark/pretrained/vinvl_vg_x152c4.pth", "MODEL.ROI_HEADS.NMS_FILTER", "1", "MODEL.ROI_HEADS.SCORE_THRESH", "0.2", "TEST.IGNORE_BOX_REGRESSION", "True", "MODEL.ATTRIBUTE_ON", "True", "TEST.OUTPUT_FEATURE", "True"],
-                    ckpt = "/workspace/scene_graph_benchmark/pretrained/vinvl_vg_x152c4.pth",
+                    opts = ["TEST.IMS_PER_BATCH", "2", "MODEL.WEIGHT", "/workspace/shared/pretrained/vinvl_vg_x152c4.pth", "MODEL.ROI_HEADS.NMS_FILTER", "1", "MODEL.ROI_HEADS.SCORE_THRESH", "0.2", "TEST.IGNORE_BOX_REGRESSION", "True", "MODEL.ATTRIBUTE_ON", "True", "TEST.OUTPUT_FEATURE", "True"],
+                    ckpt = "/workspace/shared/pretrained/vinvl_vg_x152c4.pth",
                     DEVICE = "cuda",
                     MIN_BOXES = 10,
                     MAX_BOXES = 100,
@@ -95,6 +95,9 @@ class Encoder(object):
             oscar_labels.append(labels)
 
         return oscar_features, oscar_labels
+
+    def __call__(self, imgs):
+        return self.encode(imgs)
 
 
 

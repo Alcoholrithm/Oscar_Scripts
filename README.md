@@ -1,5 +1,5 @@
 # Oscar
-Scripts for getting result of Oscar Architecture from raw images
+Scripts for to inference using Oscar in Image Captioning and VQA tasks.
 
 ## Requirements
 ```

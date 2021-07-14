@@ -1,5 +1,5 @@
 # Oscar
-Scripts for to inference using Oscar in Image Captioning and VQA tasks.
+Scripts for to inference using Oscar in Image Captioning and VQA tasks
 
 ## Requirements
 ```

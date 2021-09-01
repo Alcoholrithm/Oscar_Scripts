@@ -7,7 +7,7 @@ import cv2
 import torch
 
 class Encoder(object):
-    def __init__(self, yaml_path):
+    def __init__(self, yaml_path = '/workspace/detectron2/configs/VG-Detection/'):
         """
         """
         super().__init__()
@@ -33,8 +33,7 @@ class Encoder(object):
     def encode(self, imgs):
         instances_list, features_list = self.doit(imgs)
 
-        oscar_features = []
-        oscar_classes  = []
+        outs = []
 
         for img, instances, features in zip(imgs, instances_list, features_list):
             
@@ -76,12 +75,9 @@ class Encoder(object):
 
             classes = instances._fields['pred_classes'][keep_boxes]
 
-            oscar_features.append(full_feat)
-            oscar_classes.append(classes.numpy())
+            outs.append([full_feat, classes.numpy()])
         
-        #oscar_features = np.array(oscar_features)
-        #oscar_classes  = np.array(oscar_classes)
-        return oscar_features, oscar_classes
+        return outs
 
     def doit(self, raw_images):
         with torch.no_grad():
@@ -149,6 +145,9 @@ class Encoder(object):
                 raw_instances_list.append(raw_instances)
 
             return raw_instances_list, roi_features_list
+
+    def __call__(self, imgs):
+        return self.encode(imgs)
 
 
 

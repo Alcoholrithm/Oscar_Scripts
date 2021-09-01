@@ -35,10 +35,9 @@ class Encoder(object):
 
         self.conf_threshold = conf_threshold
 
-    def transpose_img(self, img):
+    def permute_img(self, img):
         img = torch.Tensor(img).to(self.DEVICE)
-        img = img.transpose(0, 2)
-        img = img.transpose(1, 2)
+        img = img.permute((2, 0, 1))
         return img
 
     def compute_on_image(self, images):
@@ -49,14 +48,14 @@ class Encoder(object):
         return output
 
     def encode(self, imgs):
+    
         for i in range(len(imgs)):
-            imgs[i] = self.transpose_img(imgs[i])
-
+            imgs[i] = self.permute_img(imgs[i])
         pred = self.compute_on_image(imgs)
 
-        oscar_features = []
-        oscar_labels = []
+        outs = []
         for img, p in zip(imgs, pred):
+
             features = p.get_field('box_features')
             boxes = []
             for bs in p.get_field('boxes_all'):
@@ -90,11 +89,9 @@ class Encoder(object):
             spatial_feat = np.concatenate((scaled_x, scaled_y, scaled_x + scaled_width, scaled_y + scaled_height,
                                             scaled_width, scaled_height), axis=1)
             full_feat = np.concatenate((features, spatial_feat), axis=1)
+            outs.append([full_feat, labels])
 
-            oscar_features.append(full_feat)
-            oscar_labels.append(labels)
-
-        return oscar_features, oscar_labels
+        return outs
 
     def __call__(self, imgs):
         return self.encode(imgs)

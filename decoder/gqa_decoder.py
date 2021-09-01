@@ -4,11 +4,10 @@ from oscar.utils.task_utils import _truncate_seq_pair
 import torch
 import pickle
 import json
-import numpy as np
 
 class Decoder(object):
     def __init__(self, \
-                checkpoint = '/workspace/shared/gqa_output/checkpoint-3', \
+                checkpoint = '/workspace/shared/gqa_output/checkpoint-9', \
                 ans2label = '/workspace/shared/gqa/trainval_testdev_all_ans2label.pkl', \
                 label2ans = '/workspace/shared/gqa/trainval_testdev_all_label2ans.pkl', \
                 device = 'cuda', \
@@ -33,7 +32,7 @@ class Decoder(object):
             finetuning_task = 'gqa'
         )
 
-        self.tokenizer = tokenizer_class.from_pretrained(checkpoint, do_lower_class = True)
+        self.tokenizer = tokenizer_class.from_pretrained(checkpoint, do_lower_case = True)
 
         config.img_feature_dim = 2054
         config.img_feature_type = 'faster_r-cnn'
@@ -159,12 +158,12 @@ class Decoder(object):
                 img_feat,
                 torch.tensor([0], dtype=torch.long)) #torch.tensor([example.q_id], dtype=torch.long))
 
-    def decode(self, features, instances, questions):
+    def decode(self, args):
         examples = []
-        for i in range(len(instances)):
-            ex = self.example(questions[i], instances[i].cpu().numpy(), self.idx2word)
+        for i in range(len(args)):
+            ex = self.example(args[i][2], args[i][1].cpu().numpy(), self.idx2word)
             examples.append(self.tensorize_example(ex, \
-                                                    torch.Tensor(features[i]),\
+                                                    torch.Tensor(args[i][0]),\
                                                     cls_token_at_end = self.cls_token_at_end,\
                                                     pad_on_left = self.pad_on_left,\
                                                     cls_token=self.tokenizer.cls_token,\
@@ -179,18 +178,24 @@ class Decoder(object):
             batch = tuple(t.to(self.device) for t in examples)
             inputs = {'input_ids':      batch[0],
                       'attention_mask': batch[1],
-                      'token_type_ids': None,
-                      'labels':         batch[3],
+                      'token_type_ids': batch[2],
+                      'labels':         None,
                       'img_feats':      batch[5]}
             
             outputs = self.model(**inputs)
-            tmp_eval_loss, logits = outputs[:2]
+            logits = outputs[0]
 
-            ans = logits.argmax(1).cpu().numpy()
+            arg_logits = torch.argsort(logits, dim = 1, descending=True).cpu().numpy()
 
-            return [self.label2ans[a] for a in ans]
+            res = []
+            for i in range(len(arg_logits)):
+                temp = {}
+                for j in range(5):
+                    temp[self.label2ans[arg_logits[i][j]]] = logits[i][arg_logits[i][j]].cpu().numpy().item()
+                res.append(temp)
+            return res
 
-    def __call__(self, features, instances, questions):
-        return self.decode(features, instances, questions)
+    def __call__(self, args):
+        return self.decode(args)
 
         

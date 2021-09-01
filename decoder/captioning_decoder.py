@@ -5,7 +5,7 @@ import numpy as np
 import torch
 
 class Decoder(object):
-	def __init__(self, checkpoint, device):
+	def __init__(self, checkpoint, device = 'cuda'):
 		self.checkpoint = checkpoint
 		
 		self.config = BertConfig.from_pretrained(self.checkpoint)
@@ -22,12 +22,12 @@ class Decoder(object):
 											max_seq_a_length = 40, mask_prob = 0.15, max_masked_tokens = 3, is_train = False)
 		
 
-	def decode(self, features, classes):
+	def decode(self, args):
 		examples = [[],[],[],[],[]]
 		caption = ""
-		for i in range(len(classes)):
-			od_labels = " ".join([str(t) for t in np.array(classes[i])])
-			example =   self.tensorizer.tensorize_example(caption, torch.Tensor(features[i]), text_b = od_labels)
+		for i in range(len(args)):
+			od_labels = " ".join([str(t) for t in np.array(args[i][1])])
+			example =   self.tensorizer.tensorize_example(caption, torch.Tensor(args[i][0]), text_b = od_labels)
 			cls_token_id, sep_token_id, pad_token_id, mask_token_id, period_token_id = \
 						self.tokenizer.convert_tokens_to_ids([self.tokenizer.cls_token, self.tokenizer.sep_token, \
 						self.tokenizer.pad_token, self.tokenizer.mask_token, '.'])
@@ -66,8 +66,11 @@ class Decoder(object):
 		
 		captions = []
 
-		for i in range(len(classes)):
+		for i in range(len(args)):
 			captions.append(self.tokenizer.decode(output[0][i * 3][0].tolist(), skip_special_tokens=True))
 		return captions
+
+	def __call__(self, args):
+		return self.decode(args)
 
 		

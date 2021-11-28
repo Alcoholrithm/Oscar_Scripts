@@ -5,8 +5,9 @@ from scene_graph_benchmark.config import sg_cfg
 from scene_graph_benchmark.AttrRCNN import AttrRCNN
 from maskrcnn_benchmark.utils.checkpoint import DetectronCheckpointer
 import numpy as np
+from encoder.base_encoder import BaseEncoder
 
-class Encoder(object):
+class Encoder(BaseEncoder):
     def __init__(self,
                     config_file = "/workspace/scene_graph_benchmark/sgg_configs/vgattr/vinvl_x152c4.yaml",
                     opts = ["TEST.IMS_PER_BATCH", "2", "MODEL.WEIGHT", "/workspace/shared/pretrained/vinvl_vg_x152c4.pth", "MODEL.ROI_HEADS.NMS_FILTER", "1", "MODEL.ROI_HEADS.SCORE_THRESH", "0.2", "TEST.IGNORE_BOX_REGRESSION", "True", "MODEL.ATTRIBUTE_ON", "True", "TEST.OUTPUT_FEATURE", "True"],

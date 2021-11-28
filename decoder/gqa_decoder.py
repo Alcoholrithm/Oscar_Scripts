@@ -4,8 +4,9 @@ from oscar.utils.task_utils import _truncate_seq_pair
 import torch
 import pickle
 import json
+from decoder.base_decoder import BaseDecoder
 
-class Decoder(object):
+class Decoder(BaseDecoder):
     def __init__(self, \
                 checkpoint = '/workspace/shared/gqa_output/checkpoint-9', \
                 ans2label = '/workspace/shared/gqa/trainval_testdev_all_ans2label.pkl', \
@@ -194,8 +195,5 @@ class Decoder(object):
                     temp[self.label2ans[arg_logits[i][j]]] = logits[i][arg_logits[i][j]].cpu().numpy().item()
                 res.append(temp)
             return res
-
-    def __call__(self, args):
-        return self.decode(args)
 
         

@@ -4,8 +4,9 @@ from oscar.utils.task_utils import _truncate_seq_pair
 import torch
 import pickle
 import json
+from decoder.base_decoder import BaseDecoder
 
-class Decoder(object):
+class Decoder(BaseDecoder):
     def __init__(self, \
                 checkpoint = '/workspace/shared/vqa_models/large/checkpoint-24-396575', \
                 ans2label = '/workspace/shared/vqa/trainval_ans2label.pkl', \
@@ -162,9 +163,6 @@ class Decoder(object):
                     temp[self.label2ans[arg_logits[i][j]]] = logits[i][arg_logits[i][j]].cpu().numpy().item()
                 res.append(temp)
             return res
-    
-    def __call__(self, args):
-        return self.decode(args)
 
 
     

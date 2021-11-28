@@ -3,8 +3,9 @@ from transformers.pytorch_transformers import BertTokenizer, BertConfig
 from oscar.run_captioning import CaptionTensorizer
 import numpy as np
 import torch
+from decoder.base_decoder import BaseDecoder
 
-class Decoder(object):
+class Decoder(BaseDecoder):
 	def __init__(self, checkpoint, device = 'cuda'):
 		self.checkpoint = checkpoint
 		
@@ -69,8 +70,4 @@ class Decoder(object):
 		for i in range(len(args)):
 			captions.append(self.tokenizer.decode(output[0][i * 3][0].tolist(), skip_special_tokens=True))
 		return captions
-
-	def __call__(self, args):
-		return self.decode(args)
-
 		

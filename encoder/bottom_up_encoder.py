@@ -3,10 +3,10 @@ from detectron2.engine import DefaultPredictor
 from detectron2.modeling.postprocessing import detector_postprocess
 from detectron2.modeling.roi_heads.fast_rcnn import FastRCNNOutputLayers, FastRCNNOutputs, fast_rcnn_inference_single_image
 import numpy as np
-import cv2
 import torch
+from encoder.base_encoder import BaseEncoder
 
-class Encoder(object):
+class Encoder(BaseEncoder):
     def __init__(self, yaml_path = '/workspace/detectron2/configs/VG-Detection/'):
         """
         """
@@ -145,9 +145,6 @@ class Encoder(object):
                 raw_instances_list.append(raw_instances)
 
             return raw_instances_list, roi_features_list
-
-    def __call__(self, imgs):
-        return self.encode(imgs)
 
 
 

@@ -6,7 +6,18 @@ import torch
 from decoder.base_decoder import BaseDecoder
 
 class Decoder(BaseDecoder):
+	"""
+	Captioning Decoder Class to decode Encoded Information
+
+	"""
 	def __init__(self, checkpoint, device = 'cuda'):
+		"""
+		Initialized the Captioning Decoder 
+		: param checkpoint (string) : Location of Checkpoint
+		: param device     (string) : Device to load the Decoder
+		
+		: return : None
+		"""
 		self.checkpoint = checkpoint
 		
 		self.config = BertConfig.from_pretrained(self.checkpoint)
@@ -24,6 +35,12 @@ class Decoder(BaseDecoder):
 		
 
 	def decode(self, args):
+		"""
+		Main function to decode encoded information to image caption
+		: param args      (list) :  list of (feature vector, object labels)
+
+		: return captions (list) : list of image captions
+		"""
 		examples = [[],[],[],[],[]]
 		caption = ""
 		for i in range(len(args)):

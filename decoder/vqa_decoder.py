@@ -7,6 +7,10 @@ import json
 from decoder.base_decoder import BaseDecoder
 
 class Decoder(BaseDecoder):
+    """
+	VQA Decoder Class to decode Encoded Information
+
+	"""
     def __init__(self, \
                 checkpoint = '/workspace/shared/vqa_models/large/checkpoint-24-396575', \
                 ans2label = '/workspace/shared/vqa/trainval_ans2label.pkl', \
@@ -14,8 +18,28 @@ class Decoder(BaseDecoder):
                 device = 'cuda', \
                 max_seq_length = 128, \
                 max_img_seq_length = 50, \
+                cls_token_at_end = False, \
+                cls_token_segment_id = 1, \
+                pad_on_left = False, \
+                pad_token_segment_id = 0, \
                 idx2word = '/workspace/scene_graph_benchmark/visualgenome/VG-SGG-dicts-vgoi6-clipped.json'
     ):
+        """
+		Initialized the VQA Decoder 
+		: param checkpoint        (string) : Location of Checkpoint
+        : param ans2label         (string) : Location of ans2label file
+        : param label2ans         (string) : Location of label2ans file
+		: param device            (string) : Device to load the Decoder
+        : param max_seq_length       (int) : Maximum length of sequence
+        : param max_img_seq_length   (int) : Maximum length of image sequence
+        : param cls_token_at_end (boolean) : Is the cls token is at the end
+        : param cls_token_segment_id (int) : ID of cls token segment
+        : param pad_on_left      (boolean) : Is the pad on left
+        : param pad_token_segment_id (int) : ID of pad token segment
+        : param idx2word          (string) : Location of idx2word file that convert integer object label to string object label
+		
+		: return : None
+		"""
 
         self.label2ans = pickle.load(open(label2ans, 'rb'))
         self.ans2label = list(pickle.load(open(ans2label, 'rb')).values())
@@ -49,17 +73,33 @@ class Decoder(BaseDecoder):
         self.max_seq_length = max_seq_length
         self.max_img_seq_length = max_img_seq_length
 
+        self.cls_token_at_end = cls_token_at_end
+        self.cls_token_segment_id = cls_token_segment_id
+        self.pad_on_left = pad_on_left
+        self.pad_token_segment_id = pad_token_segment_id
+
         self.idx2word = json.load(open(idx2word,'r'))
 
     class example():
+        """
+        A data structure that converts raw data to be suitable for use in a decoder model
+
+        """
         def __init__(self, question, od_tag, idx2word):
+            """
+            Construct appropriate structure from raw data
+
+            : param question (string) : A question about the encoded image
+            : param od_tag   (Tensor) : A Tensor of object labels in the encoded image
+
+            : return : None
+            """
             self.text_a = question
             self.text_b = ' '.join([idx2word['idx_to_label'][str(t)] for t in od_tag])
 
-    def tensorize_example(self, ex, img_feat, cls_token_at_end=False, pad_on_left=False,
+    def tensorize_example(self, ex, img_feat,
                     cls_token='[CLS]', sep_token='[SEP]', pad_token=0,
                     sequence_a_segment_id=0, sequence_b_segment_id=1,
-                    cls_token_segment_id=1, pad_token_segment_id=0,
                     mask_padding_with_zero=True):
 
         tokens_a = self.tokenizer.tokenize(ex.text_a)
@@ -77,7 +117,7 @@ class Decoder(BaseDecoder):
         segment_ids += [sequence_b_segment_id] * (len(tokens_b) + 1)
 
         tokens = [cls_token] + tokens
-        segment_ids = [cls_token_segment_id] + segment_ids
+        segment_ids = [self.cls_token_segment_id] + segment_ids
 
         input_ids = self.tokenizer.convert_tokens_to_ids(tokens)
 
@@ -89,7 +129,7 @@ class Decoder(BaseDecoder):
 
         input_ids = input_ids + ([pad_token] * padding_length)
         input_mask = input_mask + ([0 if mask_padding_with_zero else 1] * padding_length)
-        segment_ids = segment_ids + ([pad_token_segment_id] * padding_length)
+        segment_ids = segment_ids + ([self.pad_token_segment_id] * padding_length)
 
         assert len(input_ids) == self.max_seq_length
         assert len(input_mask) == self.max_seq_length
@@ -121,7 +161,15 @@ class Decoder(BaseDecoder):
                 torch.tensor([0], dtype=torch.long))
     
     def target_tensor(self, len, labels, scores):
-        """ create the target by labels and scores """
+        """ 
+        create the target by labels and scores 
+        
+        : param len (int) : Length of the target
+        : parma labels (list) : list of label
+        : param scores (list) : list of score
+
+        return target (list) : list of target
+        """
         target = [0]*len
         for id, l in enumerate(labels):
             target[l] = scores[id]
@@ -129,17 +177,21 @@ class Decoder(BaseDecoder):
         return target
     
     def decode(self, args):
+        """
+        Main function to decode the encoded information to get answers from some questions
+
+        : param args     (list) : A list of (feature vector, object labels, question)
+        
+        : return answers (list) : A list of answers to a given question.
+        """
+
         examples = []
         for i in range(len(args)):
             ex = self.example(args[i][2], args[i][1].cpu().numpy(), self.idx2word)
             examples.append(self.tensorize_example(ex, \
                                                     torch.Tensor(args[i][0]), \
-                                                    cls_token_at_end=False, \
-                                                    pad_on_left = False, \
                                                     cls_token = self.tokenizer.cls_token, \
-                                                    sep_token = self.tokenizer.sep_token, \
-                                                    cls_token_segment_id = 0, \
-                                                    pad_token_segment_id = 0))
+                                                    sep_token = self.tokenizer.sep_token ))
         
         examples = tuple(map(torch.stack, zip(*examples)))
 

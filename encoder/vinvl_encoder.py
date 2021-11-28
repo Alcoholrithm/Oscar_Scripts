@@ -94,8 +94,5 @@ class Encoder(BaseEncoder):
 
         return outs
 
-    def __call__(self, imgs):
-        return self.encode(imgs)
-
 
 

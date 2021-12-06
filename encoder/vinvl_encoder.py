@@ -32,7 +32,7 @@ class Encoder(BaseEncoder):
         self.DEVICE = DEVICE
 
         self.MIN_BOXES = MIN_BOXES
-        self.MAX_BOXES = MIN_BOXES
+        self.MAX_BOXES = MAX_BOXES
 
         self.conf_threshold = conf_threshold
 

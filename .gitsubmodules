@@ -1,0 +1,9 @@
+[submodule "Oscar"]
+	path = Oscar
+	url = https://github.com/microsoft/Oscar.git
+[submodule "py-bottom-up-attention"]
+	path = py-bottom-up-attention
+	url = https://github.com/Alcoholrithm/py-bottom-up-attention
+[submodule "scene_graph_benchmark"]
+	path = scene_graph_benchmark
+	url = https://github.com/microsoft/scene_graph_benchmark.git

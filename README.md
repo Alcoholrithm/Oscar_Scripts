@@ -38,8 +38,17 @@ os.environ['CUDA_VISIBLE_DEVICES']='1'
 
 ## MODEL ZOO
 
+### Image Captioning
+  
 Task | BLEU-1 | BLEU-2 | BLEU-3 | BLEU-4 | CIDEr |
 -----|--------|--------|--------|--------|-------|
 [Ours(XE)](https://drive.google.com/file/d/110N20FiHgyPVuwVnBTKgBHFCkn5Uf0Iz/view?usp=sharing) |  72.7  |  54.6  |  36.9  |  23.0  |  118.0  |
 [Ours(CIDEr)](https://drive.google.com/file/d/1ORxgRWcM_mTKkr6jToRn4rR7dFD1qdYS/view?usp=sharing) |  72.9  |  54.92  |  37.4  |  23.7  |  118.0  | 
 Oscar+ |  -   |    -   |    -   |  41.0  |  140.9  |
+
+### GQA
+  
+ Task |  ACC   |
+------|--------|
+[Ours](https://drive.google.com/file/d/1JTfxcZ8joPGINZ1OnF46AfgaCR6RVx4r/view?usp=sharing)  |  57.9  |
+Oscar+|  64.7  |

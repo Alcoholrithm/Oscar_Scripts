@@ -44,7 +44,7 @@ Task | BLEU-1 | BLEU-2 | BLEU-3 | BLEU-4 | CIDEr |
 -----|--------|--------|--------|--------|-------|
 [OursB(XE)](https://drive.google.com/file/d/110N20FiHgyPVuwVnBTKgBHFCkn5Uf0Iz/view?usp=sharing) |  72.7  |  54.6  |  36.9  |  23.0  |  118.0  |
 [OursL(XE)](https://drive.google.com/file/d/1ORxgRWcM_mTKkr6jToRn4rR7dFD1qdYS/view?usp=sharing) |  72.9  |  54.92  |  37.4  |  23.7  |  118.0  | 
-[OursB(CIDEr)] |  76.9  |  59.7  |  41.6  |  25.6  |  128.6  |
+[OursB(CIDEr)](https://drive.google.com/file/d/1P3jEt_JcLd7AZyq_ajPDn_oM6hKkq_BA/view?usp=sharing) |  76.9  |  59.7  |  41.6  |  25.6  |  128.6  |
 Oscar+ |  -   |    -   |    -   |  41.0  |  140.9  |
 
 ### GQA
